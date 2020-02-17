@@ -1,19 +1,19 @@
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import studentinfo.Student;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class StudentTest extends junit.framework.TestCase {
+class StudentTest {
 
     @Test
     void testCreate() {
-        Student student = new Student("Jane Doe");
-        assertNotNull(student);
-        String studentName = student.getName();
-        assertEquals("Jane Doe", studentName);
+        final String firstStudentName = "Jane Doe";
+        Student firstStudent = new Student(firstStudentName);
+        assertEquals(firstStudentName, firstStudent.getName());
 
-        Student secondStudent = new Student("Joe Blow");
-        String secondStudentName = secondStudent.getName();
-        assertEquals("Joe Blow", secondStudentName);
+        final String SecondStudentName = "Joe Blow";
+        Student secondStudent = new Student(SecondStudentName);
+        assertEquals(SecondStudentName, secondStudent.getName());
     }
 
 }

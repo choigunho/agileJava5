@@ -1,12 +1,15 @@
+package studentinfo;
+
 public class Student {
 
-    String myName;
+    String name;
+
     public Student(String name) {
-        myName = name;
+        this.name = name;
     }
 
     public String getName() {
-        return myName;
+        return name;
     }
 
 }
