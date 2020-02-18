@@ -1,23 +1,24 @@
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import studentinfo.CourseSession;
+import studentinfo.DateUtil;
 import studentinfo.Student;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CourseSessionTest {
 
+    private static final int CREDITS = 3;
     private static CourseSession session;
     private static Date startDate;
 
     @BeforeAll
     static void setUp() {
-        startDate = createDate(2003, 1, 6);
-        session = new CourseSession("ENGL", "101", startDate);
+        startDate = DateUtil.createDate(2003, 1, 6);
+//        session = CourseSession.create("ENGL", "101", startDate);
+        session = createCourseSession();
     }
 
     @Test
@@ -31,6 +32,7 @@ class CourseSessionTest {
     void testEnrollStudents() {
         Student student1 = new Student("Cain DiVoe");
         session.enroll(student1);
+        assertEquals(CREDITS, student1.getCredits());
         assertEquals(1, session.getNumberOfStudents());
         assertEquals(student1, session.get(0));
 
@@ -43,18 +45,23 @@ class CourseSessionTest {
 
     @Test
     void testCourseDates() {
-        Date sixteenWeeksOut = createDate(2003, 4, 25);
+        Date sixteenWeeksOut = DateUtil.createDate(2003, 4, 25);
         assertEquals(sixteenWeeksOut, session.getEndDate());
     }
 
+    @Test
+    void testCount() {
+        CourseSession.resetCount();
+        createCourseSession();
+        assertEquals(1, CourseSession.getCount());
+        createCourseSession();
+        assertEquals(2, CourseSession.getCount());
+    }
 
-    static Date createDate(int year, int month, int date) {
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.clear();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month -1);
-        calendar.set(Calendar.DAY_OF_MONTH, date);
-        return calendar.getTime();
+    private static CourseSession createCourseSession() {
+        CourseSession session = CourseSession.create("ENGL", "101", startDate);
+        session.setNumberOfCredits(CourseSessionTest.CREDITS);
+        return session;
     }
 
 }

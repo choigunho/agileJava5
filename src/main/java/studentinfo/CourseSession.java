@@ -6,20 +6,34 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class CourseSession {
+    private static int count;
     private String department;
     private String number;
     private ArrayList<Student> students = new ArrayList<Student>();
     private Date startDate;
+    private int numberOfCredits;
 
-    public CourseSession(String department, String number) {
-        this.department = department;
-        this.number = number;
-    }
-
-    public CourseSession(String department, String number, Date startDate) {
+    private CourseSession(String department, String number, Date startDate) {
         this.department = department;
         this.number = number;
         this.startDate = startDate;
+    }
+
+    private static void incrementCount() {
+        ++count;
+    }
+
+    public static int getCount() {
+        return count;
+    }
+
+    public static void resetCount() {
+        count = 0;
+    }
+
+    public static CourseSession create(String department, String number, Date startDate) {
+        incrementCount();
+        return new CourseSession(department, number, startDate);
     }
 
     public String getDepartment() {
@@ -35,6 +49,7 @@ public class CourseSession {
     }
 
     public void enroll(Student student) {
+        student.addCredits(numberOfCredits);
         students.add(student);
     }
 
@@ -55,23 +70,12 @@ public class CourseSession {
         return calendar.getTime();
     }
 
-    ArrayList<Student> getAllStudents() {
+    public ArrayList<Student> getAllStudents() {
         return students;
     }
 
-//    public String getRosterReport() {
-//        StringBuilder buffer = new StringBuilder();
-//
-//        buffer.append(ROSTER_REPORT_HEADER);
-//
-//        for(Student student: students) {
-//            buffer.append(student.getName());
-//            buffer.append(NEWLINE);
-//        }
-//
-//        buffer.append(ROSTER_REPORT_FOOTER + students.size() + NEWLINE);
-//
-//        return buffer.toString();
-//    }
 
+    public void setNumberOfCredits(int numberOfCredits) {
+        this.numberOfCredits = numberOfCredits;
+    }
 }

@@ -1,4 +1,7 @@
-package studentinfo;
+package report;
+
+import studentinfo.CourseSession;
+import studentinfo.Student;
 
 public class RosterReporter {
 
@@ -14,16 +17,25 @@ public class RosterReporter {
 
     public String getReport() {
         StringBuilder buffer = new StringBuilder();
+        writeHeader(buffer);
+        writeBody(buffer);
+        writeFooter(buffer);
 
+        return buffer.toString();
+    }
+
+    private void writeHeader(StringBuilder buffer) {
         buffer.append(ROSTER_REPORT_HEADER);
+    }
 
+    private void writeBody(StringBuilder buffer) {
         for(Student student: session.getAllStudents()) {
             buffer.append(student.getName());
             buffer.append(NEWLINE);
         }
+    }
 
+    private void writeFooter(StringBuilder buffer) {
         buffer.append(ROSTER_REPORT_FOOTER + session.getAllStudents().size() + NEWLINE);
-
-        return buffer.toString();
     }
 }
