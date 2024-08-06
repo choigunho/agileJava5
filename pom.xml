@@ -12,15 +12,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
-        <junit.jupiter.version>5.5.2</junit.jupiter.version>
-        <junit.platform.version>1.5.2</junit.platform.version>
+        <junit.jupiter.version>5.9.1</junit.jupiter.version>
+        <junit.platform.version>1.9.1</junit.platform.version>
 
         <!-- SonarCube -->
-        <sonar.host.url>http://172.21.17.152:9000/</sonar.host.url>
-        <sonar.login>3d77620e86700d97371bf8b878b70b828869959b</sonar.login>
+        <sonar.host.url>http://sonar.score</sonar.host.url>
+        <sonar.login>24c9945aa09edb6faf6f61048d61f7c0a6a14835</sonar.login>
         <sonar.language>java</sonar.language>
         <sonar.sources>src/main/java</sonar.sources>
-<!--        <sonar.coverage.jacoco.xmlReportPaths>../target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>-->
     </properties>
 
     <dependencies>
@@ -36,17 +35,103 @@
             <version>${junit.platform.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.5.0</version>
+            <scope>test</scope>
+            <exclusions><!-- https://www.baeldung.com/maven-version-collision -->
+                <exclusion>
+                    <groupId>org.apache.groovy</groupId>
+                    <artifactId>groovy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.groovy</groupId>
+                    <artifactId>groovy-xml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>5.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>3.0.22</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.codehaus.mojo</groupId>-->
+<!--            <artifactId>exec-maven-plugin</artifactId>-->
+<!--            <version>1.5.0</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+
+
     </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>SDS public nexus</id>
+            <url>http://70.121.224.52:8081/nexus/content/repositories/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <source>8</source>-->
+<!--                    <target>8</target>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <!-- latest version (2.20.1) does not work well with JUnit5 -->
+                <version>2.19.1</version>
+                <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>1.0.3</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.junit.jupiter</groupId>
+                        <artifactId>junit-jupiter-engine</artifactId>
+                        <version>5.0.3</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
@@ -62,6 +147,7 @@
                     </execution>
                     <execution>
                         <id>report</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -69,7 +155,32 @@
                 </executions>
             </plugin>
 
+            <!-- result-maven-plugin 설정 -->
+            <!-- Jacoco plugin 추가 및 execution 설정 -->
+            <plugin>
+                <groupId>com.samsung.sds.staf</groupId>
+                <artifactId>result-maven-plugin</artifactId>
+                <version>1.12.7</version>
+                <configuration>
+
+                    <!-- 테스토피아 연동 관련 정보 -->
+                    <testJobId>8866</testJobId><!-- Testopia Webportal에서 생성한 Test Job ID 입력 -->
+
+                    <!-- UNIT 결과 업로드를 위한 파라미터 -->
+                    <resultType>JUnit</resultType>
+                    <resultFileOrDirectory>./target/surefire-reports</resultFileOrDirectory>
+                    <resultPrefix>TEST</resultPrefix>
+                    <resultPostfix>xml</resultPostfix>
+
+                    <!-- Coverage 정보 업로드를 위한 파라미터 -->
+                    <coverageType>Jacoco</coverageType>
+                    <coverageFileOrDirectory>./target/site/jacoco/jacoco.xml</coverageFileOrDirectory>
+
+                    <!-- Coverage 정보 업로드시 신규/변경 파일을 필터링하기 위한 파라미터 -->
+                    <srcBasePath>src/main/java</srcBasePath>
+
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>
