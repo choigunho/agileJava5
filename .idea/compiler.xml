@@ -9,5 +9,8 @@
         <module name="agileJava" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="agileJava5" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
